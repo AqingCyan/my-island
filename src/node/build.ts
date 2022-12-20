@@ -29,7 +29,7 @@ export async function bundle(root: string) {
     };
   };
 
-  spinner.start('Building client + server bundles...');
+  spinner.start('Building client + server bundles...\n');
 
   try {
     const [clientBundle, serverBundle] = await Promise.all([
