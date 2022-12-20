@@ -19,11 +19,11 @@ export async function bundle(root: string) {
       root,
       plugins: [pluginReact()],
       build: {
-        assetsDir: isServer ? '' : 'asset',
+        ssr: isServer,
         outDir: isServer ? '.temp' : 'build',
         rollupOptions: {
           input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
-          output: isServer ? { entryFileNames: '[name].js', format: 'cjs' } : { format: 'esm' }
+          output: { format: isServer ? 'cjs' : 'esm' }
         },
       },
     }
@@ -32,12 +32,12 @@ export async function bundle(root: string) {
   spinner.start('Building client + server bundles...')
 
   try {
-    const clientBuild = async () => viteBuild(resolveViteConfig(false))
-
-    const serverBuild = async () => viteBuild(resolveViteConfig(true))
-
-    const [clientBundle, serverBundle] = await Promise.all([clientBuild(), serverBuild()])
-
+    const [clientBundle, serverBundle] = await Promise.all([
+      // client build
+      viteBuild(resolveViteConfig(false)),
+      // server build
+      viteBuild(resolveViteConfig(true)),
+    ])
     return [clientBundle, serverBundle] as [RollupOutput, RollupOutput]
   } catch(error) {
     console.error(error)
