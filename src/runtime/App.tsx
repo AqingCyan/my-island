@@ -1,5 +1,5 @@
-import { Layout } from '../node/theme-default/Layout'
+import { Layout } from '../node/theme-default/Layout';
 
 export function App() {
-  return <Layout />
+  return <Layout />;
 }
