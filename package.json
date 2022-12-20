@@ -9,7 +9,11 @@
   "scripts": {
     "start": "tsup --watch",
     "build": "tsup",
-    "lint": "eslint --fix --ext .ts,.tsx,.js,.jsx --quiet ./"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "lint:fix": "eslint --fix --ext .ts,.tsx,.js,.jsx --quiet ./",
+    "prepare": "husky install",
+    "test:unit": "vitest run",
+    "test:ui": "vitest --ui"
   },
   "bin": {
     "island": "bin/island.js"
@@ -27,6 +31,7 @@
     "@types/node": "^18.11.15",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
+    "@vitest/ui": "^0.26.1",
     "commitlint": "^17.3.0",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
