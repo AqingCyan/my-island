@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import { build as viteBuild, InlineConfig } from 'vite'
+import pluginReact from '@vitejs/plugin-react'
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants'
 import type { RollupOutput } from 'rollup'
 
@@ -14,6 +15,7 @@ export async function bundle(root: string) {
       return {
         mode: 'production',
         root,
+        plugins: [pluginReact()],
         build: {
           assetsDir: isServer ? '' : 'asset',
           outDir: isServer ? '.temp' : 'build',
