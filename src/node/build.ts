@@ -1,41 +1,40 @@
-import * as path from 'path'
-import * as fs from 'fs-extra'
+import path from 'path'
+import fs from 'fs-extra'
+import type { RollupOutput } from 'rollup'
 import { build as viteBuild, InlineConfig } from 'vite'
 import pluginReact from '@vitejs/plugin-react'
+import ora from 'ora'
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants'
-import type { RollupOutput } from 'rollup'
+
+const spinner = ora()
 
 /**
  * 分别打包服务端和浏览器端产物
  * @param root
  */
 export async function bundle(root: string) {
-  try {
-    const resolveViteConfig = (isServer: boolean): InlineConfig => {
-      return {
-        mode: 'production',
-        root,
-        plugins: [pluginReact()],
-        build: {
-          assetsDir: isServer ? '' : 'asset',
-          outDir: isServer ? '.temp' : 'build',
-          rollupOptions: {
-            input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
-            output: isServer ? { entryFileNames: '[name].js', format: 'cjs' } : { format: 'esm' }
-          },
+  const resolveViteConfig = (isServer: boolean): InlineConfig => {
+    return {
+      mode: 'production',
+      root,
+      plugins: [pluginReact()],
+      build: {
+        assetsDir: isServer ? '' : 'asset',
+        outDir: isServer ? '.temp' : 'build',
+        rollupOptions: {
+          input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
+          output: isServer ? { entryFileNames: '[name].js', format: 'cjs' } : { format: 'esm' }
         },
-      }
+      },
     }
+  }
 
-    const clientBuild = async () => {
-      return viteBuild(resolveViteConfig(false))
-    }
+  spinner.start('Building client + server bundles...')
 
-    const serverBuild = async () => {
-      return viteBuild(resolveViteConfig(true))
-    }
+  try {
+    const clientBuild = async () => viteBuild(resolveViteConfig(false))
 
-    console.log('Building client + server bundles...')
+    const serverBuild = async () => viteBuild(resolveViteConfig(true))
 
     const [clientBundle, serverBundle] = await Promise.all([clientBuild(), serverBuild()])
 
@@ -74,6 +73,7 @@ export async function renderPage(render: () => string, root: string, clientBundl
 export async function build(root: string) {
   const [clientBundle] = await bundle(root)
   const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');
-  const { render } = require(serverEntryPath)
+  const { render } = await import(serverEntryPath)
   await renderPage(render, root, clientBundle)
+  spinner.succeed('client + server bundles ok')
 }
