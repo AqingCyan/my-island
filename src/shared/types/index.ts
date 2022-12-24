@@ -25,8 +25,8 @@ export interface ThemeConfig {
 }
 
 export interface UserConfig {
-  title: string;
-  description: string;
-  themeConfig: ThemeConfig;
-  vite: ViteConfiguration;
+  title?: string;
+  description?: string;
+  themeConfig?: ThemeConfig;
+  vite?: ViteConfiguration;
 }

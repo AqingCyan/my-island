@@ -43,3 +43,7 @@ export async function resolveConfig(
     return [configPath, {} as UserConfig] as const;
   }
 }
+
+export function defineConfig(config: UserConfig): UserConfig {
+  return config;
+}
