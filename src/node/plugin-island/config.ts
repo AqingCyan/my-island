@@ -1,6 +1,7 @@
-import { relative } from 'path';
+import { relative, join } from 'path';
 import { SiteConfig } from 'shared/types';
 import { Plugin } from 'vite';
+import { PACKAGE_ROOT } from '../constants';
 
 const SITE_DATA_ID = 'island:site-data';
 
@@ -19,6 +20,15 @@ export function pluginConfig(
       if (id === '\0' + SITE_DATA_ID) {
         return `export default ${JSON.stringify(config.siteData)}`;
       }
+    },
+    config() {
+      return {
+        resolve: {
+          alias: {
+            '@runtime': join(PACKAGE_ROOT, 'src', 'runtime', 'index.ts')
+          }
+        }
+      };
     },
     async handleHotUpdate(ctx) {
       const customWatchedFiles = [config.configPath];

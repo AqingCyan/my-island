@@ -1,10 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
-import siteData from 'island:site-data';
 
 function renderInBrowser() {
-  console.log(siteData);
   const containerEl = document.getElementById('root');
 
   if (!containerEl) {
