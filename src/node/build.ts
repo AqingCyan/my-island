@@ -5,19 +5,23 @@ import { build as viteBuild, InlineConfig } from 'vite';
 import pluginReact from '@vitejs/plugin-react';
 import ora from 'ora';
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
+import { SiteConfig } from 'shared/types';
+import { pluginConfig } from './plugin-island/config';
 
 const spinner = ora();
 
 /**
  * 分别打包服务端和浏览器端产物
  * @param root
+ * @param config
  */
-export async function bundle(root: string) {
+export async function bundle(root: string, config: SiteConfig) {
   const resolveViteConfig = (isServer: boolean): InlineConfig => {
     return {
       mode: 'production',
       root,
-      plugins: [pluginReact()],
+      plugins: [pluginReact(), pluginConfig(config)],
+      ssr: { noExternal: ['react-router-dom'] },
       build: {
         ssr: isServer,
         outDir: isServer ? '.temp' : 'build',
@@ -76,8 +80,8 @@ export async function renderPage(
   await fs.remove(path.join(root, '.temp')); // 已经有了拼接好的 html 内容，就不需要服务端打包产物了，删除即可
 }
 
-export async function build(root: string) {
-  const [clientBundle] = await bundle(root);
+export async function build(root: string, config: SiteConfig) {
+  const [clientBundle] = await bundle(root, config);
   const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');
   const { render } = await import(serverEntryPath);
   await renderPage(render, root, clientBundle);

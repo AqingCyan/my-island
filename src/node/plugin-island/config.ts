@@ -7,7 +7,7 @@ const SITE_DATA_ID = 'island:site-data';
 
 export function pluginConfig(
   config: SiteConfig,
-  restart: () => Promise<void>
+  restart?: () => Promise<void>
 ): Plugin {
   return {
     name: 'island:site-data',
@@ -34,7 +34,7 @@ export function pluginConfig(
       const customWatchedFiles = [config.configPath];
       const include = (id: string) =>
         customWatchedFiles.some((file) => id.includes(file));
-      if (include(ctx.file)) {
+      if (include(ctx.file) && restart) {
         console.log(
           `\n${relative(config.root, ctx.file)} changed, restarting server...`
         );
