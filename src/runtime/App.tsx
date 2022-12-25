@@ -1,4 +1,4 @@
-import { Layout } from '../node/theme-default/Layout';
+import { Layout } from '../theme-default/Layout';
 
 export function App() {
   return <Layout />;
