@@ -2,11 +2,10 @@ import path from 'path';
 import fs from 'fs-extra';
 import type { RollupOutput } from 'rollup';
 import { build as viteBuild, InlineConfig } from 'vite';
-import pluginReact from '@vitejs/plugin-react';
 import ora from 'ora';
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
 import { SiteConfig } from 'shared/types';
-import { pluginConfig } from './plugin-island/config';
+import { createVitePlugins } from './vitePlugins';
 
 const spinner = ora();
 
@@ -20,7 +19,7 @@ export async function bundle(root: string, config: SiteConfig) {
     return {
       mode: 'production',
       root,
-      plugins: [pluginReact(), pluginConfig(config)],
+      plugins: createVitePlugins(config),
       ssr: { noExternal: ['react-router-dom'] },
       build: {
         ssr: isServer,
